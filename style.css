@@ -8,35 +8,44 @@ body {
   background: url("background.gif") no-repeat center center fixed;
   background-size: cover;
   display: flex;
-  height: 100vh;
   justify-content: center;
+  height: 100vh;
 }
 
 .term {
   width: 42%;
   height: 42%;
-  display: flex;
+  padding: 0.5em;
   background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
   align-self: center;
+  align-items: stretch;
+}
+
+.term-history {
+  display: flex;
+  flex: 95 1 auto;
+  align-self: flex-start;
+  width: 100%;
 }
 
 .term-input {
-    display: flex;
-    flex: 1 1 auto;
-    align-self: end;
+  display: flex;
+  flex: 5 1 auto;
+  align-self: flex-start;
+  width: 100%;
 }
 
 span {
-  display: inline-flex;
-  color: #7fdde9;
+  color: #18ff00;
   align-self: center;
 }
 
 input {
-  display: inline-flex;
-  align-self: center;
   background: none;
-  width: 100%;
   border: none;
-  color: #fff;
+  color: #18ff00;
+  flex: 1 1 auto;
+  width: 100%;
 }
