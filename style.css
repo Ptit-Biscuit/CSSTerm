@@ -1,0 +1,42 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: url("background.gif") no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+}
+
+.term {
+  width: 42%;
+  height: 42%;
+  display: flex;
+  background: rgba(0, 0, 0, 0.7);
+  align-self: center;
+}
+
+.term-input {
+    display: flex;
+    flex: 1 1 auto;
+    align-self: end;
+}
+
+span {
+  display: inline-flex;
+  color: #7fdde9;
+  align-self: center;
+}
+
+input {
+  display: inline-flex;
+  align-self: center;
+  background: none;
+  width: 100%;
+  border: none;
+  color: #fff;
+}
