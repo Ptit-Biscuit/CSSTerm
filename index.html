@@ -11,11 +11,11 @@
 </head>
 <body>
     <div class="term">
-        <div class="term-history"></div>
         <div class="term-input">
-            <span>>&nbsp;</span>
-            <input id="command" onkeypress="return read(event)" placeholder="start typing" />
+            <span id="caret">&nbsp;>&nbsp;</span>
+            <input id="command" type="text" spellcheck="false" onkeypress="return read(event)" />
         </div>
+        <div class="term-output"></div>
     </div>
 </body>
 </html>
