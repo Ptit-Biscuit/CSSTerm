@@ -1,21 +1,56 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>PLOP</title>
 
-    <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      type="text/javascript"
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+    ></script>
     <script type="text/javascript" src="script.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <div class="term">
-        <div class="term-input">
-            <span id="caret">&nbsp;>&nbsp;</span>
-            <input id="command" type="text" spellcheck="false" onkeypress="return read(event)" />
-        </div>
-        <div class="term-output"></div>
+      <form id="command" style="display:none;"></form>
+      <div class="term-input">
+        <span class="before">anon@plop ~ $</span
+        ><input
+          type="text"
+          form="command"
+          spellcheck="false"
+          autocomplete="off"
+          autofocus
+        />
+      </div>
     </div>
-</body>
+
+    <script type="text/javascript">
+      $('#command').submit(event => {
+        event.preventDefault();
+        command = $('input')[0].value;
+
+        $('.term-input').before(
+          '<div>' + $('.term-input .before')[0].outerHTML + command
+        );
+
+        // command = command.split(' ');
+        // if (command.length > 1) {
+        //   app(commands.use(command[0], command.slice(1).join(' ')));
+        // } else if (command.length == 1) {
+        //   app(commands.use(command[0]));
+        // }
+
+        $('.term-input .before')[0].innerHTML = 'anon@plop ~ $';
+
+        $('input')[0].scrollIntoView();
+        $('input')[0].value = '';
+
+        return false;
+      });
+    </script>
+  </body>
 </html>
