@@ -2,7 +2,6 @@
  * HERE GOES COMMANDS
  */
 var commands = {};
-var cmdHist = [];
 
 commands.clear = () => {
   if ($(".term-history")) {

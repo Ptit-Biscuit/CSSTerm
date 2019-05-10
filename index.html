@@ -29,6 +29,17 @@
     </div>
 
     <script type="text/javascript">
+      var input = $("input")[0];
+      var cmdHist = [];
+      var histIndex = cmdHist.length - 1;
+
+      input.onkeydown = evt => {
+        if (evt.keyCode === 38 && (input.value === "" || input.value === cmdHist[histIndex]) && cmdHist.length > 0) {
+          evt.preventDefault();
+          input.value = cmdHist[histIndex--];
+        }
+      };
+
       function output(out) {
         if (out) {
           $(".term-input").before('<div class="term-history">' + out);
@@ -38,14 +49,17 @@
       $("#command").submit(event => {
         event.preventDefault();
 
-        var command = $("input")[0].value.split(" ");
+        var command = input.value.split(" ");
+        if (cmdHist[cmdHist.lenght - 1] !== command) {
+          cmdHist.push(command);
+        }
         output($(".term-input .before")[0].outerHTML + command);
         output(commands.use(command[0], command.slice(1).join(" ")));
 
         $(".term-input .before")[0].innerHTML = "anon@plop ~ $";
 
-        $("input")[0].scrollIntoView();
-        $("input")[0].value = "";
+        input.scrollIntoView();
+        input.value = "";
 
         return false;
       });
