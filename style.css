@@ -15,10 +15,11 @@ body {
   display: flex;
   flex-direction: column;
   font-family: monospace;
-  font-size: 1.1em;
+  font-size: 14px;
   color: #2e2;
-  line-height: 1.2em;
-  overflow: hidden;
+  line-height: 16px;
+  overflow: auto;
+  scrollbar-width: none;
 }
 
 .before {
