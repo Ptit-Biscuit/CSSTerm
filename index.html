@@ -30,41 +30,15 @@
 
     <script type="text/javascript">
       var input = $('input')[0];
-      var histIndex;
-
-      input.onkeydown = evt => {
-        // UP => most recent to oldest entry
-        var arrowUp = evt.keyCode === 38;
-        // DOWN => oldest to most recent
-        var arrowDwn = evt.keyCode === 40;
-
-        if ((arrowUp || arrowDwn) && cmdHist.length > 0) {
-          evt.preventDefault();
-
-          if (input.value === '') {
-            histIndex = arrowUp ? cmdHist.length : cmdHist.length - 1;
-          }
-
-          if (arrowUp && histIndex !== 0) {
-            input.value = cmdHist[--histIndex];
-          } else if (arrowDwn && histIndex !== cmdHist.length - 1) {
-            input.value = cmdHist[++histIndex];
-          }
-        }
-      };
-
-      function output(out) {
-        if (out) {
-          $('.term-input').before('<div class="term-history">' + out);
-        }
-      }
+      misc.initHistory(input);
 
       $('#command').submit(event => {
         event.preventDefault();
 
         var command = input.value.split(' ');
-        output($('.term-input .before')[0].outerHTML + command);
-        output(commands.use(command[0], command.slice(1).join(' ')));
+        var args = command.slice(1).join(' ');
+        misc.output($('.term-input .before')[0].outerHTML + command.join(' '));
+        misc.output(misc.callCmd(command[0], args));
 
         $('.term-input .before')[0].innerHTML = 'anon@plop ~ $';
 
