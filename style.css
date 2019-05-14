@@ -22,6 +22,10 @@ body {
   scrollbar-width: none;
 }
 
+.term::-webkit-scrollbar { 
+  display: none; 
+}
+
 .before {
   padding-right: 0.5em;
 }
