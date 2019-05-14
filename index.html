@@ -33,23 +33,22 @@
       var histIndex;
 
       input.onkeydown = evt => {
+        // UP => most recent to oldest entry
         var arrowUp = evt.keyCode === 38;
+        // DOWN => oldest to most recent
         var arrowDwn = evt.keyCode === 40;
 
         if ((arrowUp || arrowDwn) && cmdHist.length > 0) {
           evt.preventDefault();
 
-          if (input.value === '' || (arrowUp && histIndex === cmdHist.length - 1)) {
-            histIndex = arrowUp ? cmdHist.length - 1 : 0;
-            console.log(histIndex); // 2 || 0
+          if (input.value === '') {
+            histIndex = arrowUp ? cmdHist.length : cmdHist.length - 1;
           }
 
-          if (arrowUp && (histIndex + 1) !== 0) {
-            input.value = cmdHist[histIndex--];
-            console.log(histIndex); // 1 0 -1 || 1 2 3
-          } else if (arrowDwn && histIndex !== cmdHist.length) {
-            input.value = cmdHist[histIndex++];
-            console.log(histIndex);
+          if (arrowUp && histIndex !== 0) {
+            input.value = cmdHist[--histIndex];
+          } else if (arrowDwn && histIndex !== cmdHist.length - 1) {
+            input.value = cmdHist[++histIndex];
           }
         }
       };
