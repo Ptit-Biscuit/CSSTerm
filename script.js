@@ -1,3 +1,39 @@
+/** Commands that can be use in terminal */
+var commands = {};
+
+/** Commands history */
+var cmdHist = ['modules open plop'];
+
+/** History index */
+var histIndex;
+
+/** Terminal help */
+var cmdHelp = [
+  'Welcome to <b>plop</b> !',
+  '',
+  'To clear terminal type <i>clear</i>',
+  'To see history type <i>history</i>',
+  'To see help type <i>help</i>'
+];
+
+class Module {
+  constructor(name, path, help = '') {
+    this.name = name;
+    this.path = path;
+    this.help = help;
+  }
+}
+
+/** Modules available */
+var modules = [
+  new Module('plop', '/plop', 'help for module <i>plop</i>'),
+  new Module('foo', '/foo', 'help for module <i>foo</i>'),
+  new Module('bar', '/bar', 'help for module <i>bar</i>')
+];
+
+/** Active module */
+var activeModule = null;
+
 /** Miscellaneous */
 var misc = {};
 
@@ -9,9 +45,9 @@ misc.output = out => {
 };
 
 /** Call given command  */
-misc.callCmd = (cmd, args = '') => {
+misc.callCmd = (cmd, args) => {
   if (cmd) {
-    cmdHist.push(cmd + (args !== '' ? ' ' + args : ''));
+    cmdHist.push(cmd + (args ? ' ' + args.join(' ') : ''));
 
     return cmd in commands
       ? commands[cmd](args)
@@ -44,36 +80,6 @@ misc.initHistory = input => {
   };
 };
 
-class Module {
-  constructor(name, path, help = '') {
-    this.name = name;
-    this.path = path;
-    this.help = help;
-    this.isOpen = false;
-  }
-}
-
-/** Commands that can be use in terminal */
-var commands = {};
-
-/** Commands history */
-var cmdHist = ['open_module plop'];
-
-/** History index */
-var histIndex;
-
-/** Terminal help */
-var cmdHelp = [
-  'Welcome to <b>plop</b> !',
-  '',
-  'To clear terminal type <i>clear</i>',
-  'To see history type <i>history</i>',
-  'To see help type <i>help</i>'
-];
-
-/** Modules available */
-var modules = [new Module('plop', '/plop', 'help for module <i>plop</i>')];
-
 /** Clear terminal entries */
 commands.clear = () => {
   if ($('.term-history')) {
@@ -99,32 +105,48 @@ commands.help = module => {
   }).go();
 };
 
-/** List all modules available */
-commands.list_modules = () => modules.forEach(mod => misc.output(mod.name));
-
-/** Open a module */
-commands.open_module = module => {
-  if (modules.map(mod => mod.name).includes(module)) {
-    if (modules.find(mod => mod.name === module).isOpen) {
-      misc.output("Module '" + module + "' already opened");
-    } else {
-      modules.find(mod => mod.name === module).isOpen = true;
-    }
-  } else {
-    misc.output("Module '" + module + "' cannot be found");
-  }
+/** Print history in terminal */
+commands.history = () => {
+  commands.clear();
+  cmdHist.slice(0, cmdHist.length - 1).forEach(hist => misc.output(hist));
 };
-
-/** Close the active module */
-commands.close_module = () => (modules.find(mod => mod.isOpen).isOpen = false);
 
 /** Login player */
 commands.login = () => {
   console.log('login');
 };
 
-/** Print history in terminal */
-commands.history = () => {
-  commands.clear();
-  cmdHist.slice(0, cmdHist.length - 1).forEach(hist => misc.output(hist));
+/** Modules relative commands */
+commands.modules = args => {
+  switch (args[0]) {
+    // List all modules available
+    case 'list':
+      modules.forEach(mod => misc.output(mod.name));
+      break;
+    // Open a module
+    case 'open':
+    case 'activate':
+      var module = args[1];
+
+      if (!module) {
+        misc.output('Module name is required');
+      }
+
+      if (modules.map(mod => mod.name).includes(module)) {
+        activeModule = modules.find(mod => mod.name === module);
+      } else {
+        misc.output("Module '" + module + "' cannot be found");
+      }
+      break;
+    // Close the active module
+    case 'close':
+    case 'deactivate':
+      activeModule = null;
+      break;
+    // Help by default
+    case 'help':
+    default:
+      commands.help('');
+      break;
+  }
 };
