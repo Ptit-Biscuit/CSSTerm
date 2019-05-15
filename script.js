@@ -44,12 +44,14 @@ misc.initHistory = input => {
   };
 };
 
-var Module = function(name, path, help = '') {
-  this.name = name;
-  this.path = path;
-  this.help = help;
-  this.isOpen = false;
-};
+class Module {
+  constructor(name, path, help = '') {
+    this.name = name;
+    this.path = path;
+    this.help = help;
+    this.isOpen = false;
+  }
+}
 
 /** Commands that can be use in terminal */
 var commands = {};
@@ -73,7 +75,11 @@ var cmdHelp = [
 var modules = [new Module('plop', '/plop', 'help for module <i>plop</i>')];
 
 /** Clear terminal entries */
-commands.clear = () => ($('.term-history') ? $('.term-history').remove() : '');
+commands.clear = () => {
+  if ($('.term-history')) {
+    $('.term-history').remove();
+  }
+};
 
 /** Print help in terminal */
 commands.help = module => {
@@ -98,11 +104,12 @@ commands.list_modules = () => modules.forEach(mod => misc.output(mod.name));
 
 /** Open a module */
 commands.open_module = module => {
-  if (
-    modules.map(mod => mod.name).includes(module) &&
-    !modules.find(mod => mod.isOpen)
-  ) {
-    modules.find(mod => mod.name === module).isOpen = true;
+  if (modules.map(mod => mod.name).includes(module)) {
+    if (modules.find(mod => mod.name === module).isOpen) {
+      misc.output("Module '" + module + "' already opened");
+    } else {
+      modules.find(mod => mod.name === module).isOpen = true;
+    }
   } else {
     misc.output("Module '" + module + "' cannot be found");
   }
