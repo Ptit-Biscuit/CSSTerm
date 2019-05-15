@@ -11,6 +11,10 @@
       type="text/javascript"
       src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
     ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/typeit@6/dist/typeit.min.js"
+    ></script>
     <script type="text/javascript" src="script.js"></script>
   </head>
   <body>
@@ -29,6 +33,7 @@
     </div>
 
     <script type="text/javascript">
+      var before = $('.term-input .before')[0];
       var input = $('input')[0];
       misc.initHistory(input);
 
@@ -37,10 +42,10 @@
 
         var command = input.value.split(' ');
         var args = command.slice(1).join(' ');
-        misc.output($('.term-input .before')[0].outerHTML + command.join(' '));
+        misc.output(before.outerHTML + command.join(' '));
         misc.output(misc.callCmd(command[0], args));
 
-        $('.term-input .before')[0].innerHTML = 'anon@plop ~ $';
+        before.innerHTML = 'anon@plop ~ $';
 
         input.scrollIntoView();
         input.value = '';

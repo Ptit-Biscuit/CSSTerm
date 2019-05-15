@@ -1,7 +1,7 @@
 /** Miscellaneous */
 var misc = {};
 
-/** Formatted output */
+/** Write formatted output in terminal */
 misc.output = out => {
   if (out) {
     $('.term-input').before('<div class="term-history">' + out);
@@ -11,7 +11,7 @@ misc.output = out => {
 /** Call given command  */
 misc.callCmd = (cmd, args = '') => {
   if (cmd) {
-    cmdHist.push(cmd + ' ' + args);
+    cmdHist.push(cmd + (args !== '' ? ' ' + args : ''));
 
     return cmd in commands
       ? commands[cmd](args)
@@ -48,7 +48,7 @@ misc.initHistory = input => {
 var commands = {};
 
 /** Commands history */
-var cmdHist = ['a', 'b', 'c'];
+var cmdHist = ['help'];
 
 /** History index */
 var histIndex;
@@ -62,7 +62,22 @@ commands.clear = () => {
 
 /** Print help in terminal */
 commands.help = () => {
-  console.log('help');
+  commands.clear();
+  $('.term-input').before('<div class="term-history">');
+
+  new TypeIt('.term-history', {
+    strings: [
+      'Welcome to <b>plop</b> !',
+      '',
+      'To clear terminal type <i>clear</i>',
+      'To see history type <i>history</i>',
+      'To see help type <i>help</i>'
+    ],
+    speed: 50,
+    cursor: false,
+    html: true,
+    waitUntilVisible: true
+  }).go();
 };
 
 /** Open a module */
@@ -77,5 +92,8 @@ commands.login = () => {
 
 /** Print history in terminal */
 commands.history = () => {
-  console.log('login');
+  commands.clear();
+  cmdHist.slice(0, cmdHist.length - 1).forEach(hist => {
+    misc.output(hist);
+  });
 };
