@@ -41,11 +41,12 @@
         event.preventDefault();
 
         var command = input.value.split(' ');
-        var args = command.slice(1).join(' ');
         misc.output(before.outerHTML + command.join(' '));
-        misc.output(misc.callCmd(command[0], args));
+        misc.output(misc.callCmd(command[0], command.slice(1).join(' ')));
 
-        before.innerHTML = 'anon@plop ~ $';
+        var openModule = modules.find(mod => mod.isOpen);
+        before.innerHTML =
+          'anon@plop ~' + (openModule ? openModule.path : '') + ' $';
 
         input.scrollIntoView();
         input.value = '';
