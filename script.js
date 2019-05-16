@@ -2,7 +2,7 @@
 var commands = {};
 
 /** Commands history */
-var cmdHist = ['modules open plop'];
+var cmdHist = ['modules install plop'];
 
 /** History index */
 var histIndex;
@@ -16,19 +16,75 @@ var cmdHelp = [
   'To see help type <i>help</i>'
 ];
 
+/** Fake download */
+class Download {
+  constructor(name, version) {
+    this.id = Math.random()
+      .toString(36)
+      .slice(2);
+    this.name = name;
+    this.version = version;
+    this.speed = parseFloat(100 * (1 + Math.random()));
+  }
+
+  go = () => {
+    var percent = 0;
+
+    $('.term-input').before(
+      `<div class="term-history download">` +
+        `<div id="${this.id}">${this.name} ${this.version}`
+    );
+
+    setInterval(() => {
+      var done = new Array(Math.floor(percent / 5) + 1).join('#');
+      var toDo = new Array(Math.ceil((100 - percent) / 5) + 1).join('-');
+
+      if (percent <= 100) {
+        if ($(`.download-progress#${this.id}`)) {
+          $(`.download-progress#${this.id}`).remove();
+        }
+
+        $(`.download #${this.id}`).after(
+          `<div class="download-progress" id="${this.id}">` +
+            `${this.speed.toFixed(1)} Msec/t ` +
+            `[${done}${toDo}] ` +
+            `${percent++}%`
+        );
+      } else {
+        clearInterval();
+      }
+    }, this.speed);
+  };
+}
+
+/** A module */
 class Module {
-  constructor(name, path, help = '') {
+  constructor(name, path, downloads = [], help = '') {
     this.name = name;
     this.path = path;
+    this.downloads = downloads;
     this.help = help;
+    this.installed = false;
   }
+
+  install = () => {
+    this.downloads.forEach(dl => dl.go());
+    this.installed = true;
+  };
 }
 
 /** Modules available */
 var modules = [
-  new Module('plop', '/plop', 'help for module <i>plop</i>'),
-  new Module('foo', '/foo', 'help for module <i>foo</i>'),
-  new Module('bar', '/bar', 'help for module <i>bar</i>')
+  new Module(
+    'plop',
+    '/plop',
+    [
+      new Download('Plop plop', '0.56 (beta)'),
+      new Download('Foo', '4.75'),
+      new Download('Bar', '3.1.42')
+    ],
+    'help for module <i>plop</i>'
+  )
 ];
 
 /** Active module */
@@ -90,10 +146,10 @@ commands.clear = () => {
 /** Print help in terminal */
 commands.help = module => {
   commands.clear();
-  $('.term-input').before('<div class="term-history">');
+  $('.term-input').before('<div class="term-history help">');
 
   // Typewriting effect
-  new TypeIt('.term-history', {
+  new TypeIt('.help', {
     strings:
       module && modules.map(mod => mod.name).includes(module)
         ? modules.find(mod => mod.name === module).help
@@ -123,6 +179,20 @@ commands.modules = args => {
     case 'list':
       modules.forEach(mod => misc.output(mod.name));
       break;
+    // Install a module
+    case 'install':
+      var module = args[1];
+
+      if (!module) {
+        misc.output('Module name is required');
+      }
+
+      if (modules.map(mod => mod.name).includes(module)) {
+        modules.find(mod => mod.name === module).install();
+        activeModule = null;
+      } else {
+        misc.output("Module '" + module + "' cannot be found");
+      }
     // Open a module
     case 'open':
     case 'activate':
@@ -133,7 +203,13 @@ commands.modules = args => {
       }
 
       if (modules.map(mod => mod.name).includes(module)) {
-        activeModule = modules.find(mod => mod.name === module);
+        var mod = modules.find(mod => mod.name === module);
+
+        if (mod.installed) {
+          activeModule = mod;
+        } else {
+          misc.output("Module '" + module + "' needs to be installed");
+        }
       } else {
         misc.output("Module '" + module + "' cannot be found");
       }
