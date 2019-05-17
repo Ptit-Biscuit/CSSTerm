@@ -36,7 +36,7 @@ class Download {
 
         $(`.download #${this.id}`).after(
           `<div class="download-progress" id="${this.id}">` +
-            `${this.speed.toFixed(1)} ms/t ` +
+            `${this.speed.toFixed(1)} TiB/ms ` +
             `[${done}${toDo}] ` +
             `${this.percent++}%`
         );
@@ -59,17 +59,21 @@ class Module {
   }
 
   /** Install process for module */
-  install = async () => {
-    if (!this.installed) {
-      this.downloads.forEach(dl => dl.go());
-      await this.allDownloadsComplete();
-
-      this.installed = true;
-      misc.output(
-        `Downloads complete. Module '${this.name}' successfully installed`
-      );
-    }
-  };
+  install = async () =>
+    new Promise(async resolve => {
+      if (!this.installed) {
+        this.downloads.forEach(dl => dl.go());
+        this.allDownloadsComplete().then(() => {
+          this.installed = true;
+          misc.output(
+            `Downloads complete. Module '${this.name}' successfully installed`
+          );
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
 
   /** Check downloads completeness */
   allDownloadsComplete = async () =>

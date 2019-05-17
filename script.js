@@ -44,12 +44,12 @@ misc.output = out => {
 };
 
 /** Call given command  */
-misc.callCmd = (cmd, args) => {
+misc.callCmd = async (cmd, args) => {
   if (cmd) {
     cmdHist.push(`${cmd}${args ? ' ' + args.join(' ') : ''}`);
 
     return cmd in commands
-      ? commands[cmd](args)
+      ? await commands[cmd](args)
       : `${cmd} not found in commands`;
   }
 };
@@ -120,7 +120,7 @@ commands.login = () => {
 };
 
 /** Modules relative commands */
-commands.modules = args => {
+commands.modules = async args => {
   switch (args[0]) {
     // List all modules available
     case 'list':
@@ -138,7 +138,7 @@ commands.modules = args => {
 
       if (modules.map(mod => mod.name).includes(module)) {
         var mod = modules.find(mod => mod.name === module);
-        mod.install();
+        await mod.install();
         activeModule = mod;
       } else {
         misc.output(`Module '${module}' cannot be found`);

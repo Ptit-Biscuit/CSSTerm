@@ -38,17 +38,19 @@
       var input = $('input')[0];
       misc.initHistory(input);
 
-      $('#command').submit(event => {
+      $('#command').submit(async event => {
         event.preventDefault();
 
         var command = input.value.split(' ');
         misc.output(before.outerHTML + command.join(' '));
-        misc.output(misc.callCmd(command[0], command.slice(1)));
-
+        $('.term-input').hide(0);
+        misc.output(await misc.callCmd(command[0], command.slice(1)));
+        $('.term-input').show(0);
         before.innerHTML =
           'anon@plop ~' + (activeModule ? activeModule.path : '') + ' $';
 
         input.scrollIntoView();
+        input.focus();
         input.value = '';
 
         return false;
