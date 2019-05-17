@@ -2,7 +2,7 @@
 var commands = {};
 
 /** Commands history */
-var cmdHist = ['modules install plop'];
+var cmdHist = [];
 
 /** History index */
 var histIndex;
@@ -16,74 +16,17 @@ var cmdHelp = [
   'To see help type <i>help</i>'
 ];
 
-/** Fake download */
-class Download {
-  constructor(name, version) {
-    this.id = Math.random()
-      .toString(36)
-      .slice(2);
-    this.name = name;
-    this.version = version;
-    this.speed = parseFloat(100 * (1 + Math.random()));
-  }
-
-  go = () => {
-    var percent = 0;
-
-    $('.term-input').before(
-      `<div class="term-history download">` +
-        `<div id="${this.id}">${this.name} ${this.version}`
-    );
-
-    setInterval(() => {
-      var done = new Array(Math.floor(percent / 5) + 1).join('#');
-      var toDo = new Array(Math.ceil((100 - percent) / 5) + 1).join('-');
-
-      if (percent <= 100) {
-        if ($(`.download-progress#${this.id}`)) {
-          $(`.download-progress#${this.id}`).remove();
-        }
-
-        $(`.download #${this.id}`).after(
-          `<div class="download-progress" id="${this.id}">` +
-            `${this.speed.toFixed(1)} Msec/t ` +
-            `[${done}${toDo}] ` +
-            `${percent++}%`
-        );
-      } else {
-        clearInterval();
-      }
-    }, this.speed);
-  };
-}
-
-/** A module */
-class Module {
-  constructor(name, path, downloads = [], help = '') {
-    this.name = name;
-    this.path = path;
-    this.downloads = downloads;
-    this.help = help;
-    this.installed = false;
-  }
-
-  install = () => {
-    this.downloads.forEach(dl => dl.go());
-    this.installed = true;
-  };
-}
-
 /** Modules available */
 var modules = [
   new Module(
-    'plop',
-    '/plop',
+    'Login',
+    '/login',
     [
-      new Download('Plop plop', '0.56 (beta)'),
-      new Download('Foo', '4.75'),
-      new Download('Bar', '3.1.42')
+      new Download('Login core', '0.56 (beta)'),
+      new Download('Watchdog', '4.75'),
+      new Download('Form database', '3.1.42')
     ],
-    'help for module <i>plop</i>'
+    'help for module <i>Login</i>'
   )
 ];
 
@@ -183,26 +126,22 @@ commands.modules = args => {
     case 'install':
       var module = args[1];
 
-      if (!module) {
-        misc.output('Module name is required');
-      }
+      if (utility.checkModule(module)) {
+        var mod = modules.find(mod => mod.name === module);
 
-      if (modules.map(mod => mod.name).includes(module)) {
-        modules.find(mod => mod.name === module).install();
-        activeModule = null;
-      } else {
-        misc.output("Module '" + module + "' cannot be found");
+        if (!mod.installed) {
+          mod.install();
+        } else {
+          misc.output("Module '" + module + "' already installed");
+        }
       }
+      break;
     // Open a module
     case 'open':
     case 'activate':
       var module = args[1];
 
-      if (!module) {
-        misc.output('Module name is required');
-      }
-
-      if (modules.map(mod => mod.name).includes(module)) {
+      if (utility.checkModule(module)) {
         var mod = modules.find(mod => mod.name === module);
 
         if (mod.installed) {
@@ -210,8 +149,6 @@ commands.modules = args => {
         } else {
           misc.output("Module '" + module + "' needs to be installed");
         }
-      } else {
-        misc.output("Module '" + module + "' cannot be found");
       }
       break;
     // Close the active module
