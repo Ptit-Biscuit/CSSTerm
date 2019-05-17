@@ -2,7 +2,7 @@
 var commands = {};
 
 /** Commands history */
-var cmdHist = [];
+var cmdHist = ['modules open Login'];
 
 /** History index */
 var histIndex;
@@ -39,18 +39,18 @@ var misc = {};
 /** Write formatted output in terminal */
 misc.output = out => {
   if (out) {
-    $('.term-input').before('<div class="term-history">' + out);
+    $('.term-input').before(`<div class="term-history">${out}`);
   }
 };
 
 /** Call given command  */
 misc.callCmd = (cmd, args) => {
   if (cmd) {
-    cmdHist.push(cmd + (args ? ' ' + args.join(' ') : ''));
+    cmdHist.push(`${cmd}${args ? ' ' + args.join(' ') : ''}`);
 
     return cmd in commands
       ? commands[cmd](args)
-      : cmd + ' not found in commands';
+      : `${cmd} not found in commands`;
   }
 };
 
@@ -112,7 +112,11 @@ commands.history = () => {
 
 /** Login player */
 commands.login = () => {
-  console.log('login');
+  if (activeModule && activeModule.name === 'Login') {
+    window.location.replace('https://www.github.com/Ptit-Biscuit/CSSTerm');
+  } else {
+    misc.output("Module 'Login' not open");
+  }
 };
 
 /** Modules relative commands */
@@ -122,33 +126,22 @@ commands.modules = args => {
     case 'list':
       modules.forEach(mod => misc.output(mod.name));
       break;
-    // Install a module
-    case 'install':
-      var module = args[1];
-
-      if (utility.checkModule(module)) {
-        var mod = modules.find(mod => mod.name === module);
-
-        if (!mod.installed) {
-          mod.install();
-        } else {
-          misc.output("Module '" + module + "' already installed");
-        }
-      }
-      break;
     // Open a module
     case 'open':
     case 'activate':
       var module = args[1];
 
-      if (utility.checkModule(module)) {
-        var mod = modules.find(mod => mod.name === module);
+      if (!module) {
+        misc.output('Module name is required');
+        break;
+      }
 
-        if (mod.installed) {
-          activeModule = mod;
-        } else {
-          misc.output("Module '" + module + "' needs to be installed");
-        }
+      if (modules.map(mod => mod.name).includes(module)) {
+        var mod = modules.find(mod => mod.name === module);
+        mod.install();
+        activeModule = mod;
+      } else {
+        misc.output(`Module '${module}' cannot be found`);
       }
       break;
     // Close the active module
