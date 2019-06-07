@@ -1,1 +1,1 @@
-# CSSTerm
+# JSTerm
